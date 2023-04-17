@@ -1,0 +1,37 @@
+db.Transactions.aggregate([{
+    $lookup:{
+        from:"Users",
+        localfield: "user_id",
+        foreignfield:"_id",
+        as:"Transactions"
+    },
+},
+{
+    $project:{
+        name:1
+        amount:1
+    },
+},{
+
+$unwind:"Transactions"
+},
+{
+    $group:{
+        _id:{_id:"$_id",name:"$name"},
+        totalamount:{$sum:"Transactions.amount"},
+    },
+},
+{
+    $project:{
+        _id:0,
+        _id:"$_id._id",
+        name:"$_id.name",
+        totalamount:1
+    },
+},
+{
+    $sort:{
+        totalamount:-1,
+    },
+},
+])
